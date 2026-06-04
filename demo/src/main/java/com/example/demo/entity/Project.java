@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +19,6 @@ public class Project {
     private String name;
 
     @OneToMany(mappedBy = "project")
-    @JsonIgnore
     private List<Task> tasks = new ArrayList<>();
 
     public void setName(String name) {

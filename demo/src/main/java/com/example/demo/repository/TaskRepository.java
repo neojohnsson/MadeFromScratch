@@ -9,4 +9,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByTitle(String title);
 
     List<Task> findByCompleted(boolean completed);
+
+    List<Task> findByProjectId(Long projectId);
 }

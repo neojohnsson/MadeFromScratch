@@ -26,6 +26,10 @@ public class Task {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
+    public Long getId() {
+        return id;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }

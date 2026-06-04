@@ -2,7 +2,9 @@ package com.example.demo.controller;
 
 import java.util.List;
 
-import com.example.demo.entity.Task;
+import com.example.demo.dto.CreateTaskRequest;
+import com.example.demo.dto.TaskResponse;
+import com.example.demo.dto.UpdateTaskRequest;
 import com.example.demo.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -17,37 +19,37 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> all() {
+    public List<TaskResponse> all() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public Task one(@PathVariable Long id) {
+    public TaskResponse one(@PathVariable Long id) {
         return service.findById(id);
     }
 
     @PostMapping
-    public Task create(@Valid @RequestBody Task task) {
-        return service.create(task);
+    public TaskResponse create(@Valid @RequestBody CreateTaskRequest req) {
+        return service.create(req);
     }
 
     @PatchMapping("/{id}")
-    public Task patch(@PathVariable Long id, @RequestBody Task updates) {
-        return service.patch(id, updates);
+    public TaskResponse patch(@PathVariable Long id, @Valid @RequestBody UpdateTaskRequest req) {
+        return service.patch(id, req);
     }
 
     @PatchMapping("/{id}/complete")
-    public Task complete(@PathVariable Long id) {
+    public TaskResponse complete(@PathVariable Long id) {
         return service.complete(id);
     }
 
     @GetMapping("/completed")
-    public List<Task> completed() {
+    public List<TaskResponse> completed() {
         return service.findCompleted();
     }
 
     @GetMapping("/pending")
-    public List<Task> pending() {
+    public List<TaskResponse> pending() {
         return service.findPending();
     }
 
@@ -57,7 +59,7 @@ public class TaskController {
     }
 
     @GetMapping("/search")
-    public List<Task> searchByTitle(@RequestParam String title) {
+    public List<TaskResponse> searchByTitle(@RequestParam String title) {
         return service.searchByTitle(title);
     }
 }

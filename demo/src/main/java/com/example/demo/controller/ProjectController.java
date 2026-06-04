@@ -4,8 +4,9 @@ import java.util.List;
 
 import com.example.demo.dto.CreateProjectRequest;
 import com.example.demo.dto.ProjectResponse;
-import com.example.demo.entity.Task;
+import com.example.demo.dto.TaskResponse;
 import com.example.demo.service.ProjectService;
+import com.example.demo.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/projects")
 public class ProjectController {
     private final ProjectService service;
+    private final TaskService taskService;
 
-    public ProjectController(ProjectService service) {
+    public ProjectController(ProjectService service, TaskService taskService) {
         this.service = service;
+        this.taskService = taskService;
     }
 
     @GetMapping
@@ -29,14 +32,13 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}/tasks")
-    public List<Task> allTasks(@PathVariable Long id) {
-        // Needs to be implemented
-        throw new UnsupportedOperationException("This endpoint is not yet implemented");
+    public List<TaskResponse> allTasks(@PathVariable Long id) {
+        return taskService.findByProjectId(id);
     }
 
     @PostMapping
-    public ProjectResponse create(@Valid @RequestBody CreateProjectRequest project) {
-        return service.create(project);
+    public ProjectResponse create(@Valid @RequestBody CreateProjectRequest req) {
+        return service.create(req);
     }
 
     @DeleteMapping("/{id}")
