@@ -2,8 +2,9 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import com.example.demo.dto.CreateProjectRequest;
+import com.example.demo.dto.ProjectResponse;
 import com.example.demo.entity.Task;
-import com.example.demo.entity.Project;
 import com.example.demo.service.ProjectService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -18,22 +19,23 @@ public class ProjectController {
     }
 
     @GetMapping
-    public List<Project> all() {
+    public List<ProjectResponse> all() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public Project one(@PathVariable Long id) {
+    public ProjectResponse one(@PathVariable Long id) {
         return service.findById(id);
     }
 
     @GetMapping("/{id}/tasks")
     public List<Task> allTasks(@PathVariable Long id) {
-        return service.findById(id).getTasks();
+        // Needs to be implemented
+        throw new UnsupportedOperationException("This endpoint is not yet implemented");
     }
 
     @PostMapping
-    public Project create(@Valid @RequestBody Project project) {
+    public ProjectResponse create(@Valid @RequestBody CreateProjectRequest project) {
         return service.create(project);
     }
 

@@ -5,6 +5,8 @@ import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.CreateProjectRequest;
+import com.example.demo.dto.ProjectResponse;
 import com.example.demo.entity.Project;
 import com.example.demo.repository.ProjectRepository;
 
@@ -17,21 +19,26 @@ public class ProjectService {
         this.repo = repo;
     }
 
-    public List<Project> findAll() {
-        return (List<Project>) repo.findAll();
+    public List<ProjectResponse> findAll() {
+        return repo.findAll().stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public Project findById(Long id) {
-        return repo.findById(id).
-                orElseThrow(() -> new NoSuchElementException(
+    public ProjectResponse findById(Long id) {
+        Project p = repo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(
                         "Project with id " + id + " not found"));
+        return toResponse(p);
     }
 
-    public Project create(Project project) {
+    public ProjectResponse create(CreateProjectRequest req) {
         if (repo.count() >= 10) {
             throw new IllegalStateException("Cannot create more than 10 projects");
         }
-        return repo.save(project);
+        Project entity = toEntity(req);
+        Project saved = repo.save(entity);
+        return toResponse(saved);
     }
 
     public void deleteById(Long id) {
@@ -39,5 +46,17 @@ public class ProjectService {
             throw new NoSuchElementException("Cannot delete: project with id " + id + " not found");
         }
         repo.deleteById(id);
+    }
+
+    // Helpers
+
+    private Project toEntity(CreateProjectRequest req) {
+        Project p = new Project();
+        p.setName(req.name());
+        return p;
+    }
+
+    private ProjectResponse toResponse(Project p) {
+        return new ProjectResponse(p.getId(), p.getName());
     }
 }
