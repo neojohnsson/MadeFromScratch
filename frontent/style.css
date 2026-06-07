@@ -146,3 +146,32 @@ button:hover {
 #status.error {
     color: #ef4444;
 }
+
+.projects {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e4e4e7;
+}
+
+#project-form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#project-form input {
+    flex: 1;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #d4d4d8;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+#project-select {
+    padding: 0.5rem;
+    border: 1px solid #d4d4d8;
+    border-radius: 8px;
+    font-size: 1rem;
+}

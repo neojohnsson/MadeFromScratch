@@ -10,6 +10,15 @@
     <main>
         <h1>ToDo</h1>
 
+        <section class="projects">
+            <form id="project-form">
+                <input type="text" id="project-name" placeholder="New project name" required maxlength="100">
+                <button type="submit">Add project</button>
+            </form>
+            <label for="project-select">Project:</label>
+            <select id="project-select"></select>
+        </section>
+
         <form id="task-form">
             <input type="text" id="title" placeholder="What needs doing?" required maxlength="100">
             <input type="text" id="description" placeholder="Notes (optional)" maxlength="500">
