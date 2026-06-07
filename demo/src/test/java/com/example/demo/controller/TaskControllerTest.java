@@ -14,7 +14,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.NoSuchElementException;
 
 @WebMvcTest(TaskController.class)
 class TaskControllerTest {
@@ -41,7 +45,7 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.id").value(42))
                 .andExpect(jsonPath("$.title").value("Buy paint"));
     }
- /*
+
     @Test
     void createTask_emptyTitle_returns400() throws Exception {
         // Arrange - Invalid body
@@ -49,34 +53,32 @@ class TaskControllerTest {
 
         // Act + Assert
         mockMvc.perform(post("/api/tasks")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(req)))
-            .andExpect(status().isBadRequest());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest());
     }
-    /*
+
     @Test
     void getTask_missingId_returns404() throws Exception {
         // Arrange - Invalid path / id
-        TaskResponse fakeResponse = new TaskResponse(42L, "Buy paint", "Latex", false, 1L);
-        when(taskService.getId(42L).thenReturn(fakeResponse));
+        when(taskService.findById(9999L))
+                .thenThrow(new NoSuchElementException("Task with id 9999 not found"));
 
         // Act + Assert
-        mockMvc.perform(get("/api/tasks/42"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(42));
+        mockMvc.perform(get("/api/tasks/9999"))
+                .andExpect(status().isNotFound());
     }
 
-    /*
     @Test
-    void updateTask_completedTrue() Throws Exception {
-        // Arrange
-        TaskResponse fakeResponse = new TaskResponse(42L, "Buy paint", "Latex", false, 1L);
-        when(taskService.complete(eq(42L), any().thenReturn(fakeResponse)));
+    void updateTask_completedTrue() throws Exception {
+        // Arrange - when the service is asked to complete task 42, return a "completed" task
+        TaskResponse completedTask = new TaskResponse(42L, "Buy paint", "Latex", true, 1L);
+        when(taskService.complete(42L)).thenReturn(completedTask);
 
         // Act + Assert
-        mockMvc.perform("/api/tasks/42/complete")
+        mockMvc.perform(patch("/api/tasks/42/complete"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.completed").value(true))
+                .andExpect(jsonPath("$.id").value(42))
+                .andExpect(jsonPath("$.completed").value(true));
     }
-    */
 }
