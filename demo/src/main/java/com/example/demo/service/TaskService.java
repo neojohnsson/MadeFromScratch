@@ -15,6 +15,8 @@ import com.example.demo.repository.TaskRepository;
 
 @Service
 public class TaskService {
+    
+    public static final String TASK_LIMIT_MESSAGE = "Cannot create more than 100 tasks";
 
     private final TaskRepository taskRepo;
     private final ProjectRepository projectRepo;
@@ -39,7 +41,7 @@ public class TaskService {
 
     public TaskResponse create(CreateTaskRequest req) {
         if (taskRepo.count() >= 100) {
-            throw new IllegalStateException("Cannot create more than 100 tasks");
+            throw new IllegalStateException(TASK_LIMIT_MESSAGE);
         }
         Task entity = toEntity(req);
         Task saved = taskRepo.save(entity);
