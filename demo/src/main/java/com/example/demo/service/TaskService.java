@@ -15,7 +15,7 @@ import com.example.demo.repository.TaskRepository;
 
 @Service
 public class TaskService {
-    
+
     public static final String TASK_LIMIT_MESSAGE = "Cannot create more than 100 tasks";
 
     private final TaskRepository taskRepo;
