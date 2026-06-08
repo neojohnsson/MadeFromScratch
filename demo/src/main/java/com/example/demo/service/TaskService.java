@@ -79,7 +79,7 @@ public class TaskService {
     }
 
     public void deleteById(Long id) {
-        if (!projectRepo.existsById(id)) {
+        if (!taskRepo.existsById(id)) {
             throw new NoSuchElementException("Cannot delete: task with id " + id + " not found");
         }
         taskRepo.deleteById(id);
