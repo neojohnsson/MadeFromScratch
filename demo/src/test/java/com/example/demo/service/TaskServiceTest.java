@@ -5,6 +5,7 @@ import com.example.demo.entity.Task;
 
 import com.example.demo.dto.TaskResponse;
 import com.example.demo.dto.CreateTaskRequest;
+import com.example.demo.dto.UpdateTaskRequest;
 
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.TaskRepository;
@@ -37,11 +38,11 @@ import static org.mockito.Mockito.when;
     create	                    ✅   	✅  Limit case covered. Project-not-found case not tested.
     complete	                ✅  	✅  Already-completed covered. Task-not-found case not tested.
     deleteById	                ✅	    ✅  Not tested
-    findAll	                    ❌	    ❌	Not tested
-    patch	                    ❌	    ❌	Not tested
-    searchByTitle	            ❌	    ❌	Not tested
-    findCompleted	            ❌	    ❌	Not tested
-    findPending	                ❌	    ❌	Not tested
+    findAll	                    ✅	    ❌	Not tested - skip
+    patch	                    ✅	    ✅	Not tested
+    searchByTitle	            ❌	    ❌	Not tested - skip
+    findCompleted	            ❌	    ❌	Not tested - skip
+    findPending	                ❌	    ❌	Not tested - skip
     findByProjectId (service)	❌	    ❌	Not tested
  */
 
@@ -55,6 +56,108 @@ class TaskServiceTest {
 
     @InjectMocks
     private TaskService service;
+
+    // Happy path for findByProjectId
+    @Test
+    void findByProjectId_whenProjectExists_returnsTasks() {
+        // Arrange
+        Task task1 = new Task();
+        task1.setTitle("Buy paint");
+        task1.setCompleted(false);
+
+        Task task2 = new Task();
+        task2.setTitle("Walk dog");
+        task2.setCompleted(false);
+
+        when(projectRepo.existsById(1L)).thenReturn(true); // returns boolean
+        when(taskRepo.findByProjectId(1L)).thenReturn(List.of(task1, task2)); // returns List<Task>
+
+        // Act
+        List<TaskResponse> result = service.findByProjectId(1L);
+
+        // Assert
+        assertThat(result)
+                .hasSize(2)
+                .extracting(TaskResponse::title)
+                .containsExactly("Buy paint", "Walk dog");
+    }
+
+    // Error path for findByProjectId
+    @Test
+    void findByProjectId_whenProjectMissing_throws() {
+        // Arrange
+        when(projectRepo.existsById(1L)).thenReturn(false);
+
+        // Act + Assert
+        assertThatThrownBy(() -> service.findByProjectId(1L))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessageContaining("Cannot find tasks: project with id 1 not found");
+
+    }
+
+    // Happy path for patch
+    @Test
+    void patch_whenUpdated_returnsNewResponse() {
+        // Arrange
+        Project project = new Project();
+        project.setName("Home");
+
+        Task task = new Task();
+        task.setTitle("Buy paint");
+        task.setDescription("Today");
+        task.setCompleted(false);
+        task.setProject(project);
+
+        when(taskRepo.findById(1L)).thenReturn(Optional.of(task));
+        when(taskRepo.save(task)).thenReturn(task);
+
+        // The patch request - change title and description, leave project alone
+        UpdateTaskRequest req = new UpdateTaskRequest("Walk dog", "Tomorrow", null);
+
+        // Act
+        TaskResponse result = service.patch(1L, req);
+
+        // Assert
+        assertThat(result.title()).isEqualTo("Walk dog");
+        assertThat(result.description()).isEqualTo("Tomorrow");
+        assertThat(result.completed()).isFalse();
+    }
+
+    // Error path for patchProject
+    @Test
+    void patch_whenProjectMissing_throws() {
+        // Arrange
+        Task task = new Task();
+        task.setTitle("Buy paint");
+        task.setDescription("Today");
+        task.setCompleted(false);
+
+        when(taskRepo.findById(1L)).thenReturn(Optional.of(task));
+        when(projectRepo.findById(1L)).thenReturn(Optional.empty());
+
+        // create the new project
+        UpdateTaskRequest req = new UpdateTaskRequest("Walk dog", "Tomorrow", 1L);
+
+        // Act + Assert
+        assertThatThrownBy(() -> service.patch(1L, req))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessageContaining("Project with id 1 not found");
+    }
+
+    // Error path for patchTask
+    @Test
+    void patch_whenTaskMissing_throws() {
+        // Arrange
+        when(taskRepo.findById(1L)).thenReturn(Optional.empty());
+
+        // The patch request - change title and description, leave project alone
+        UpdateTaskRequest req = new UpdateTaskRequest("Walk dog", "Tomorrow", null);
+
+        // Act + Assert
+        assertThatThrownBy(() -> service.patch(1L, req))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessageContaining("Cannot update task: task with id 1 not found");
+    }
 
     // Happy path for findAll
     @Test
@@ -79,9 +182,6 @@ class TaskServiceTest {
                 .extracting(TaskResponse::title)
                 .containsExactly("Buy paint", "Walk dog");
     }
-
-    // Error path for findAll
-
 
     // Happy path for deleteById
     @Test
@@ -125,6 +225,18 @@ class TaskServiceTest {
         // Assert
         assertThat(result.completed()).isTrue();
         assertThat(result.title()).isEqualTo("Buy paint");
+    }
+
+    // Error path for complete when task missing
+    @Test
+    void complete_whenTaskMissing_throws() {
+        // Arrange
+        when(taskRepo.findById(1L)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThatThrownBy(() -> service.complete(1L))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessageContaining("Cannot complete task: task with id 1 not found");
     }
 
     // Error path for complete
@@ -174,13 +286,27 @@ class TaskServiceTest {
         assertThat(result.completed()).isFalse();
     }
 
+    // Error path for create project not found
+    @Test
+    void create_whenProjectMissing_throws() {
+        // Arrange
+        when(projectRepo.findById(1L)).thenReturn(Optional.empty());
+
+        CreateTaskRequest req = new CreateTaskRequest("placeholder", "placeholder", 1L);
+
+        // Act + Assert
+        assertThatThrownBy(() -> service.create(req))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessageContaining("Project with id 1 not found");
+    }
+
     // Error path for create
     @Test
     void create_atLimit_throwsIllegalState() {
         // Arrange - pretend the DP has 100 tasks
         when(taskRepo.count()).thenReturn(100L);
 
-        CreateTaskRequest req = new CreateTaskRequest("X", "Y", 1L);
+        CreateTaskRequest req = new CreateTaskRequest("placeholder", "placeholder", 1L);
 
         // Act + Assert
         assertThatThrownBy(() -> service.create(req))
