@@ -1,3 +1,98 @@
-#task {
-    margin: 20px;
+/* 1. resets everything */
+* {
+    box-sizing: border-box; /* makes padding/width math sane */
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    /* Rule 1: system font stack - uses the OS's native font */
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f5f5f7; /* soft off-white, not harsh pure white */
+    color: #1d1d1f; /* dark gray for text */
+    line-height: 1.5; /* more readable line height */
+}
+
+/* 2. Centered container */
+main {
+    max-width: 640px; /* Rule 3: constrain width */
+    margin: 0 auto; /* center horizontally */
+    padding: 32px 24px; /* Rule 2: breathing room */
+}
+
+h1 {
+    margin-bottom: 24px;
+    font-size: 28px;
+}
+
+/* 3. Sections as cards */
+section, form {
+    background-color: #ffffff;
+    border-radius: 6px; /* Rule 4: rounded corners */
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Rule 5: subtle shadow */
+}
+
+/* 4. Inputs and selects */
+input, select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border: 1px solid #d2d2d7;
+    border-radius: 6px;
+    font-size: 15px;
+    font-family: inherit; /* match the body font */
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #0071e3; /* accent color on focus */
+}
+
+/* 5. Buttons */
+button {
+    background-color: #0071e3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer; /* hand cursor on hover */
+    transition: background-color 0.15s; /* smooth hover */
+}
+
+button:hover {
+    background-color: #0077ed; /* slightly lighter on hover */
+}
+
+/* 6. Task / Project list items as cards */
+ul {
+    list-style: none; /* remove bullet points */
+}
+
+li {
+    background-color: #ffffff;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 12px; /* Rule 2: space between items */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Make the delete button inside list items look secondary */
+li button {
+    background-color: #ff3b30; /* red for delete */
+    margin-top: 8px;
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+li button:hover {
+    background-color: #ff453a;
+}
+
+.completed {
+    opacity: 0.5;
+    text-decoration: line-through;
 }

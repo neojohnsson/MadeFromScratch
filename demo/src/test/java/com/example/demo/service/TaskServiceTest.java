@@ -57,6 +57,46 @@ class TaskServiceTest {
     @InjectMocks
     private TaskService service;
 
+    // Happy path for toggleComplete (false -> true)
+    @Test
+    void toggleComplete_whenToggleToTrue_returnTask() {
+        Task task = new Task();
+        task.setTitle("Buy paint");
+        task.setCompleted(false);
+
+        when(taskRepo.findById(1L)).thenReturn(Optional.of(task));
+        when(taskRepo.save(task)).thenReturn(task);
+
+        TaskResponse result = service.toggleComplete(1L);
+
+        assertThat(result.completed()).isTrue();
+    }
+
+    // Happy path for toggleComplete (true -> false)
+    @Test
+    void toggleComplete_whenToggleToFalse_returnTask() {
+        Task task = new Task();
+        task.setTitle("Buy paint");
+        task.setCompleted(true);
+
+        when(taskRepo.findById(1L)).thenReturn(Optional.of(task));
+        when(taskRepo.save(task)).thenReturn(task);
+
+        TaskResponse result = service.toggleComplete(1L);
+
+        assertThat(result.completed()).isFalse();
+    }
+
+    // Error path for toggleComplete
+    @Test
+    void toggleComplete_whenTaskMissing_throws() {
+        when(taskRepo.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.toggleComplete(1L))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessageContaining("Cannot toggle task: task with id 1 not found");
+    }
+
     // Happy path for findByProjectId
     @Test
     void findByProjectId_whenProjectExists_returnsTasks() {

@@ -49,13 +49,21 @@ public class TaskService {
     }
 
     public TaskResponse complete(Long id) {
-        Task task = taskRepo.findById(id).
-                orElseThrow(() -> new NoSuchElementException(
+        Task task = taskRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(
                         "Cannot complete task: task with id " + id + " not found"));
         if (task.getCompleted() == true) {
             throw new IllegalStateException("Cannot complete task: task already completed");
         }
         task.setCompleted(true);
+        return toResponse(taskRepo.save(task));
+    }
+
+    public TaskResponse toggleComplete(Long id) {
+        Task task = taskRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Cannot toggle task: task with id " + id + " not found"));
+        task.setCompleted(!task.getCompleted());
         return toResponse(taskRepo.save(task));
     }
 

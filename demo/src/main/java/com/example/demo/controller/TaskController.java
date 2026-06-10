@@ -63,4 +63,9 @@ public class TaskController {
     public List<TaskResponse> searchByTitle(@RequestParam String title) {
         return service.searchByTitle(title);
     }
+
+    @PatchMapping("/{id}/toggle")
+    public TaskResponse getComplete(@PathVariable long id) {
+        return service.toggleComplete(id);
+    }
 }

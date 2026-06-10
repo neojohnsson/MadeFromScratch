@@ -6,18 +6,29 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>My Tasks</h1>
-<div>
-    <button id="load-tasks">Load Tasks</button>
-    <label>
-        <input type="text" placeholder="Task Name" id="task-title">
-        <input type="text" placeholder="Task Description" id="task-description">
-    </label>
-    <button id="add-task">Add Task</button>
-</div>
-<div id="tasks">
+<main>
+    <h1>My Tasks</h1>
+    <section>
+        <form id="project-form">
+            <input type="text" placeholder="Project Name" id="project-name">
+            <button id="add-project" type="button">Add Project</button>
+        </form>
+
+        <ul id="project-list"></ul>
+
+        <label for="select-project"></label>
+        <select name="select-project" id="select-project"></select>
+    </section>
+
+    <form>
+        <input type="text" placeholder="Task name" id="task-name">
+        <input type="text" placeholder="Notes (optional)" id="task-description">
+        <button id="add-task" type="button">Add Task</button>
+    </form>
+
     <ul id="task-list"></ul>
-</div>
-<script src="script.js"></script>
+
+    <script src="script.js"></script>
+</main>
 </body>
 </html>
